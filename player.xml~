@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<fantasy_content xml:lang="en-US" yahoo:uri="http://fantasysports.yahooapis.com/fantasy/v2/player/359.p.26658" time="37.309885025024ms" copyright="Data provided by Yahoo! and STATS, LLC" refresh_rate="60" xmlns:yahoo="http://www.yahooapis.com/v1/base.rng" xmlns="http://fantasysports.yahooapis.com/fantasy/v2/base.rng">
+ <player>
+  <player_key>359.p.26658</player_key>
+  <player_id>26658</player_id>
+  <name>
+   <full>Zach Ertz</full>
+   <first>Zach</first>
+   <last>Ertz</last>
+   <ascii_first>Zach</ascii_first>
+   <ascii_last>Ertz</ascii_last>
+  </name>
+  <status>Q</status>
+  <editorial_player_key>nfl.p.26658</editorial_player_key>
+  <editorial_team_key>nfl.t.21</editorial_team_key>
+  <editorial_team_full_name>Philadelphia Eagles</editorial_team_full_name>
+  <editorial_team_abbr>Phi</editorial_team_abbr>
+  <bye_weeks>
+   <week>4</week>
+  </bye_weeks>
+  <uniform_number>86</uniform_number>
+  <display_position>TE</display_position>
+  <headshot>
+   <url>http://l.yimg.com/iu/api/res/1.2/auwjW5gkx7cqyrgYcczz0w--/YXBwaWQ9c2hhcmVkO2NoPTIzMzY7Y3I9MTtjdz0xNzkwO2R4PTg1NztkeT0wO2ZpPXVsY3JvcDtoPTYwO3E9MTAwO3c9NDY-/https://s.yimg.com/xe/i/us/sp/v/nfl_cutout/players_l/20160906/26658.png</url>
+   <size>small</size>
+  </headshot>
+  <image_url>http://l.yimg.com/iu/api/res/1.2/auwjW5gkx7cqyrgYcczz0w--/YXBwaWQ9c2hhcmVkO2NoPTIzMzY7Y3I9MTtjdz0xNzkwO2R4PTg1NztkeT0wO2ZpPXVsY3JvcDtoPTYwO3E9MTAwO3c9NDY-/https://s.yimg.com/xe/i/us/sp/v/nfl_cutout/players_l/20160906/26658.png</image_url>
+  <is_undroppable>0</is_undroppable>
+  <position_type>O</position_type>
+  <eligible_positions>
+   <position>TE</position>
+  </eligible_positions>
+  <has_player_notes>1</has_player_notes>
+  <has_recent_player_notes>1</has_recent_player_notes>
+ </player>
+</fantasy_content>
+
+{http://fantasysports.yahooapis.com/fantasy/v2/base.rng}position_type
+{http://fantasysports.yahooapis.com/fantasy/v2/base.rng}eligible_positions
