@@ -76,8 +76,9 @@ def main():
         # getmatchup(oauth,ns,game_id,league_id,base_url,year,week_id,con)
         # getteamyear(oauth,ns,game_id,league_id,base_url,year,con)
         # draftresults(oauth, game_id, league_id, base_url, ns, year)
+        getplayerpoints(oauth,ns,game_id,league_id,base_url,week_id,'freeagent',year, stat_dict,con)
         getplayerpoints(oauth,ns,game_id,league_id,base_url,week_id,'roster',year, stat_dict,con)
-
+    
     else:
 #        print 'Following codepath #1'
         # Add column to 'draft' for the current week.
@@ -411,10 +412,15 @@ def getfreeagents(oauth,ns,game_id,league_id,base_url,week_id,year,con):
             full_name = full_name.find(ns+'full').text
             pos = player.find(ns+'eligible_positions')
             pos = pos[0].text
-            fa_data.append((11,week_id,player_id,None,0,int(year),None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None))
-
-    con.inserttable('roster',fa_data)
-
+            if player_id=='28482' and i=='RB':
+                pass
+            else:
+                fa_data.append((11,week_id,player_id,None,0,int(year),None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None))
+    
+    try:
+        con.inserttable('roster',fa_data)
+    except:
+        pass
 
 def getplayerpoints(oauth,ns,game_id,league_id,base_url,week_id,res_type,year,stat_dict,con):
     ''' Get the points for all the players in the league for a given week. 
@@ -426,7 +432,8 @@ def getplayerpoints(oauth,ns,game_id,league_id,base_url,week_id,res_type,year,st
     # This is all based on how the data is stored in the database.
     
     query_dict = {'roster': ['select player_id from roster where points is NULL and week_id=' + str(week_id) + ' and year=' + year + ' order by player_id limit 25', 'update roster set points=', ' where week_id=' + str(week_id) + ' and year=' + year + ' and '],
-                'draft': ['select player_id from draft where year=' + str(year) + ' and week_' + str(week_id) + ' is NULL order by player_id limit 25', 'update draft set week_'+str(week_id)+'=', ' where year='+ year + ' and ']}
+                'draft': ['select player_id from draft where year=' + str(year) + ' and week_' + str(week_id) + ' is NULL order by player_id limit 25', 'update draft set week_'+str(week_id)+'=', ' where year='+ year + ' and '],
+                'freeagent': ['select t1.player_id, t1.name,roster.points from (select distinct year,player_id,name,position from roster join players using (player_id) where year=' + str(year) + ' order by player_id) as t1 left join (select player_id, year, week_id, points from roster where year=' + str(year) + ' and week_id=' + str(week_id) + ') as roster on t1.player_id=roster.player_id where points is NULL','insert into roster(year,week_id,player_id,team_id,points) values(' + str(year) + ','+str(week_id)+',']}
     
     # Selects all the player_id associated with null values from the roster table for the selected week_id.
     # Join all the player_id together. Request the player stats from the fantasy API.
@@ -436,6 +443,7 @@ def getplayerpoints(oauth,ns,game_id,league_id,base_url,week_id,res_type,year,st
     missing_data = 25
 
     while missing_data>0:
+        # print query_dict[res_type][0]
         plist = con.query(query_dict[res_type][0])
     
         missing_data = len(plist.getresult())
@@ -463,15 +471,18 @@ def getplayerpoints(oauth,ns,game_id,league_id,base_url,week_id,res_type,year,st
             player_id = player.find(ns+'player_id').text
             points = player.find(ns+'player_points')
             points = points.find(ns+'total').text
-    
-            query = query_dict[res_type][1] + str(points) + query_dict[res_type][2] + 'player_id=' + str(player_id)
+            if res_type=='freeagent':
+                query = query_dict[res_type][1] + str(player_id) + ', 11,' + str(points) + ')'
+            else:
+                query = query_dict[res_type][1] + str(points) + query_dict[res_type][2] + 'player_id=' + str(player_id)
             con.query(query)
         
-        if res_type == 'roster':
+
+        if res_type in ['roster','freeagent']:
             for player in players.findall(ns+'player'):
                 update_query = 'update roster set '
                 player_id = player.find(ns+'player_id').text
-                update_query2 = query_dict[res_type][2] + 'player_id=' + str(player_id)
+                update_query2 = query_dict['roster'][2] + 'player_id=' + str(player_id)
                 player_stats = player.find(ns+'player_stats')
                 stats = player_stats.find(ns+'stats')
                 for stat in stats.findall(ns+'stat'):
@@ -487,7 +498,7 @@ def getplayerpoints(oauth,ns,game_id,league_id,base_url,week_id,res_type,year,st
     
         missing_data = len(plist.getresult())
 
-        # print 'Still missing ' + str(missing_data) + ' player entries for Week ' + str(week_id)
+        print 'Still missing ' + str(missing_data) + ' player entries for Week ' + str(week_id)
 
 
 def getroster(oauth,ns,game_id,league_id,base_url,week_id,year,con):
@@ -518,9 +529,12 @@ def getroster(oauth,ns,game_id,league_id,base_url,week_id,year,con):
 #            print player_id + '\t' + str(started)
             roster_data.append((team_id, week_id, player_id, None, started, int(year),None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None))
         
-    
-    con.inserttable('roster', roster_data)
-    
+    # print roster_data
+
+    try:
+        con.inserttable('roster', roster_data)
+    except:
+        pass
 
 def update_pinfo(oauth,ns,game_id,league_id,base_url,con):
     ''' Get the data for players that do not exist in a specific table. '''
